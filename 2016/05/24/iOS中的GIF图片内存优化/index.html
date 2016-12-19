@@ -1,0 +1,552 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="GIF图片在生活中颇受大家喜爱，但由于苹果原生的UIImage并不支持GIF动图，于是便有了各种第三方库对GIF动图提供了支持。作者在做需求的过程中也由于需要展示动态图片，在尝试了各种第三方库之后，整理了GIF图片的内存优化思路。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS中的GIF图片内存优化">
+<meta property="og:url" content="http://yoursite.com/2016/05/24/iOS中的GIF图片内存优化/index.html">
+<meta property="og:site_name" content="insightLabs">
+<meta property="og:description" content="GIF图片在生活中颇受大家喜爱，但由于苹果原生的UIImage并不支持GIF动图，于是便有了各种第三方库对GIF动图提供了支持。作者在做需求的过程中也由于需要展示动态图片，在尝试了各种第三方库之后，整理了GIF图片的内存优化思路。">
+<meta property="og:updated_time" content="2016-12-19T08:17:55.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS中的GIF图片内存优化">
+<meta name="twitter:description" content="GIF图片在生活中颇受大家喜爱，但由于苹果原生的UIImage并不支持GIF动图，于是便有了各种第三方库对GIF动图提供了支持。作者在做需求的过程中也由于需要展示动态图片，在尝试了各种第三方库之后，整理了GIF图片的内存优化思路。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> iOS中的GIF图片内存优化 | insightLabs </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">insightLabs</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS中的GIF图片内存优化
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-24T21:00:20+08:00" content="2016-05-24">
+              2016-05-24
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>GIF图片在生活中颇受大家喜爱，但由于苹果原生的UIImage并不支持GIF动图，于是便有了各种第三方库对GIF动图提供了支持。作者在做需求的过程中也由于需要展示动态图片，在尝试了各种第三方库之后，整理了GIF图片的内存优化思路。<br><a id="more"></a></p>
+<h2 id="No-1-为何GIF动图要做内存优化？"><a href="#No-1-为何GIF动图要做内存优化？" class="headerlink" title="No.1 为何GIF动图要做内存优化？"></a>No.1 为何GIF动图要做内存优化？</h2><p>目前支持GIF动图的第三方库只是简单的对GIF动图做了展示，但是体验细节方面还有待优化，大部分存在以下问题：</p>
+<ul>
+<li><font color="red">同步加载所有帧图片，容易阻塞主线程，</font>在大图中体现尤甚</li>
+<li>当且仅当所有帧图片都加载完毕时，才能够显示</li>
+<li><font color="red">等分不同帧之间的时间间隔，</font>无论原图是否一致，使得图片失真</li>
+</ul>
+<p>大部分第三方库在播放GIF动图的时候，容易导致系统内存暴涨，在极端情况下，还会导致应用崩溃。由此可见GIF动图做内存优化的必要性。</p>
+<h2 id="No-2-如何为GIF动图做内存优化？"><a href="#No-2-如何为GIF动图做内存优化？" class="headerlink" title="No.2 如何为GIF动图做内存优化？"></a>No.2 如何为GIF动图做内存优化？</h2><font color="red">GIF动图播放过程中，由于将所有帧图片都加载到内存中，才导致系统内存暴涨。</font>明白这个原因之后，整个优化步骤就可以整理出来了：<br><br><em> 获取帧图片数量，通过帧下标获取帧图片的时间间隔并记录进数组
+</em> 第一次加载GIF图片时，从0开始<font color="red">预加载一定数量的图片</font>（假设是10）<br>* 通过<font color="red">不断改变关键帧</font>来达到GIF图片播放的目的<br><br><br>### α. 设计UIImage的子类—AdrGIFImage<br><br>为了高保真，则需记录GIF动图每一帧的时间间隔<br><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">//通过下标获取帧图片时间间隔</div><div class="line">- (float)frameDurationAtIndex:(NSUInteger)index source:(CGImageSourceRef)source</div><div class="line">&#123;</div><div class="line">    float frameDuration = 0.1f;</div><div class="line">    CFDictionaryRef cfFrameProperties = CGImageSourceCopyPropertiesAtIndex(source, index, nil);</div><div class="line">    NSDictionary *frameProperties = (__bridge NSDictionary *)cfFrameProperties;</div><div class="line">    NSDictionary *gifProperties = frameProperties[(NSString *)kCGImagePropertyGIFDictionary];</div><div class="line">    </div><div class="line">    NSNumber *delayTimeUnclampedProp = gifProperties[(NSString *)kCGImagePropertyGIFUnclampedDelayTime];</div><div class="line">    if (delayTimeUnclampedProp) &#123;</div><div class="line">        frameDuration = [delayTimeUnclampedProp floatValue];</div><div class="line">    &#125;</div><div class="line">    else &#123;</div><div class="line">        </div><div class="line">        NSNumber *delayTimeProp = gifProperties[(NSString *)kCGImagePropertyGIFDelayTime];</div><div class="line">        if (delayTimeProp) &#123;</div><div class="line">            frameDuration = [delayTimeProp floatValue];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    if (frameDuration &lt; 0.011f) &#123;</div><div class="line">        frameDuration = 0.100f;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    CFRelease(cfFrameProperties);</div><div class="line">    return frameDuration;</div><div class="line">&#125;</div></pre></td></tr></table></figure><br><br>初始化方法中，通过预先设定的预加载数量_prefetchedNum = 10 来将一定数量的图片放入内存，避免同时加载全部图片引起的内存暴涨。<br><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line">//初始化CG图片，获取GIF图片属性值</div><div class="line">- (id)initWithCGImageSource:(CGImageSourceRef)imageSource</div><div class="line">&#123;</div><div class="line">    self = [super init];</div><div class="line">    if (!imageSource || !self) &#123;</div><div class="line">        return nil;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //CF对象需要通过CFRetain和CFRelease来管理，以下同理</div><div class="line">    CFRetain(imageSource);</div><div class="line">    </div><div class="line">    NSUInteger numberOfFrames = CGImageSourceGetCount(imageSource);</div><div class="line">    NSTimeInterval totalDuration = 0.0f;</div><div class="line">    </div><div class="line">    NSDictionary *imageProperties = CFBridgingRelease(CGImageSourceCopyProperties(imageSource, NULL));</div><div class="line">    NSDictionary *gifProperties = [imageProperties objectForKey:(NSString *)kCGImagePropertyGIFDictionary];</div><div class="line">    </div><div class="line">    self.images = [NSMutableArray arrayWithCapacity:numberOfFrames];</div><div class="line">    self.loopCount = [gifProperties[(NSString *)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];</div><div class="line">    self.frameDurations = [[NSMutableArray alloc]init];</div><div class="line">    </div><div class="line">    NSNull *aNull = [NSNull null];</div><div class="line">    for (NSUInteger i = 0; i &lt; numberOfFrames; ++i) &#123;</div><div class="line">        </div><div class="line">        [self.images addObject:aNull];</div><div class="line">        NSTimeInterval frameDuration = [self frameDurationAtIndex:i source:imageSource];</div><div class="line">        self.frameDurations[i] = @(frameDuration);</div><div class="line">        totalDuration += frameDuration;</div><div class="line">        </div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //第一次加载GIF图片时，先加载从第0张开始的十张图片</div><div class="line">    NSUInteger num = MIN(_prefetchedNum, numberOfFrames);</div><div class="line">    for (int i=0; i&lt;num; i++) &#123;</div><div class="line">        </div><div class="line">        CGImageRef image = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);</div><div class="line">        [self.images replaceObjectAtIndex:i withObject:[UIImage imageWithCGImage:image]];</div><div class="line">        CFRelease(image);</div><div class="line">        </div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    _imageSourceRef = imageSource;</div><div class="line">    </div><div class="line">    CFRetain(_imageSourceRef);</div><div class="line">    CFRelease(imageSource);</div><div class="line">    </div><div class="line">    readFrameQueue = dispatch_queue_create(&quot;com.ronnie.gifreadframe&quot;, DISPATCH_QUEUE_SERIAL);</div><div class="line">    </div><div class="line">    return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure><br><br>为了能够不断替换关键帧图片，提供通过帧下标异步替换关键帧图片方法。<br><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> *  通过帧下标异步替换关键帧图片</div><div class="line"> *</div><div class="line"> *  @param idx 帧下标</div><div class="line"> *</div><div class="line"> *  @return 帧图片</div><div class="line"> */</div><div class="line">- (UIImage*)getFrameWithIndex:(NSUInteger)idx</div><div class="line">&#123;</div><div class="line">    UIImage* frame = nil;</div><div class="line">    @synchronized(self.images)</div><div class="line">    &#123;</div><div class="line">        frame = self.images[idx];</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    if(!frame)&#123;</div><div class="line">        CGImageRef image = CGImageSourceCreateImageAtIndex(_imageSourceRef, idx, NULL);</div><div class="line">        </div><div class="line">        frame = [UIImage imageWithCGImage:image];</div><div class="line">        CFRelease(image);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    if(self.images.count &gt; _prefetchedNum)&#123;</div><div class="line">        if(idx != 0) &#123;</div><div class="line">            [self.images replaceObjectAtIndex:idx withObject:[NSNull null]];</div><div class="line">        &#125;</div><div class="line">        NSUInteger nextReadIdx = (idx + _prefetchedNum);</div><div class="line">        for(NSUInteger i=idx+1; i&lt;=nextReadIdx; i++) &#123;</div><div class="line">            NSUInteger _idx = i%self.images.count;</div><div class="line">            if([self.images[_idx] isKindOfClass:[NSNull class]]) &#123;</div><div class="line">                dispatch_async(readFrameQueue, ^&#123;</div><div class="line">                    CGImageRef image = CGImageSourceCreateImageAtIndex(_imageSourceRef, _idx, NULL);</div><div class="line">                    @synchronized(self.images) &#123;</div><div class="line">                        [self.images replaceObjectAtIndex:_idx withObject:[UIImage imageWithCGImage:image]];</div><div class="line">                    &#125;</div><div class="line">                    CFRelease(image);</div><div class="line">                &#125;);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    return frame;</div><div class="line">&#125;</div></pre></td></tr></table></figure><br><br>最终，提供播放GIF图片的方法。<br><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">//播放GIF图片</div><div class="line">+ (UIImage *)adr_animatedGIFWithData:(NSData *)data</div><div class="line">&#123;</div><div class="line">    if (!data) &#123;</div><div class="line">        return nil;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);</div><div class="line">    UIImage *image;</div><div class="line">    </div><div class="line">    image = [[self alloc] initWithCGImageSource:imageSource];</div><div class="line">    </div><div class="line">    if (imageSource) &#123;</div><div class="line">        CFRelease(imageSource);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    return image;</div><div class="line">&#125;</div></pre></td></tr></table></figure><br><br>——你以为这样就解决问题了？<br><br>——不不不，<font color="red">该在什么时机去替换关键帧这个问题还没有解决呢！</font>
+
+<h3 id="β-设计UIImageView的子类—AdrImageView"><a href="#β-设计UIImageView的子类—AdrImageView" class="headerlink" title="β. 设计UIImageView的子类—AdrImageView"></a>β. 设计UIImageView的子类—AdrImageView</h3><p>在这里，要引出两个必要知识点<a href="http://www.jianshu.com/p/c35a81c3b9eb" target="_blank" rel="external">CADisplayLink</a>和<a href="http://my.oschina.net/u/816791/blog/387568" target="_blank" rel="external">NSRunLoop</a>，一个是<font color="red">能让我们以和屏幕刷新率相同的频率将内容画到屏幕上的定时器</font>，一个是iOS消息机制的处理模式。</p>
+<p>——用CADisplayLink可以实现不停重绘。</p>
+<p>——用NSRunLoop循环检测，改变关键帧来达到GIF图片播放的目的。</p>
+<p>——OK, Let’s do it.</p>
+<p>首先，重写-(void)setImage:(UIImage *)image方法，添加GIF动图的相关属性设置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">- (void)setImage:(UIImage *)image</div><div class="line">&#123;</div><div class="line">    if (image == self.image) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    [self stopAnimating];</div><div class="line">    </div><div class="line">    self.currentFrameIndex = 0;</div><div class="line">    self.loopCountdown = 0;</div><div class="line">    self.accumulator = 0;</div><div class="line">    </div><div class="line">    if ([image isKindOfClass:[AdrGIFImage class]] &amp;&amp; image.images) &#123;</div><div class="line">        if([image.images[0] isKindOfClass:UIImage.class])</div><div class="line">            [super setImage:image.images[0]];</div><div class="line">        else</div><div class="line">            [super setImage:nil];</div><div class="line">        self.currentFrame = nil;</div><div class="line">        self.animatedImage = (AdrGIFImage *)image;</div><div class="line">        self.loopCountdown = self.animatedImage.loopCount ?: NSUIntegerMax;</div><div class="line">        [self startAnimating];</div><div class="line">    &#125; else &#123;</div><div class="line">        self.animatedImage = nil;</div><div class="line">        [super setImage:image];</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //每帧图片放在layer上</div><div class="line">    [self.layer setNeedsDisplay];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)setAnimatedImage:(AdrGIFImage *)animatedImage</div><div class="line">&#123;</div><div class="line">    _animatedImage = animatedImage;</div><div class="line">    if (animatedImage == nil) &#123;</div><div class="line">        self.layer.contents = nil;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>CADisplayLink 以特定的模式注册到runloop之后，每当屏幕需要刷新的时候，runloop就会调用CADisplayLink绑定的target上的selector，这时target可以读到 CADisplayLink 的每次调用的时间戳，用来准备下一帧显示需要的数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">- (CADisplayLink *)displayLink</div><div class="line">&#123;</div><div class="line">    if (self.superview) &#123;</div><div class="line">        if (!_displayLink &amp;&amp; _animatedImage) &#123;</div><div class="line">            _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(changeKeyframe:)];</div><div class="line">            [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:self.runLoopMode];</div><div class="line">        &#125;</div><div class="line">    &#125; else &#123;</div><div class="line">        [_displayLink invalidate];</div><div class="line">        _displayLink = nil;</div><div class="line">    &#125;</div><div class="line">    return _displayLink;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">- (void)changeKeyframe:(CADisplayLink *)displayLink</div><div class="line">&#123;</div><div class="line">    if (self.currentFrameIndex &gt;= [self.animatedImage.images count]) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    self.accumulator += fmin(displayLink.duration, kMaxTimeStep);</div><div class="line">    </div><div class="line">    while (self.accumulator &gt;= [self.animatedImage.frameDurations[self.currentFrameIndex] doubleValue]) &#123;</div><div class="line">        self.accumulator -= [self.animatedImage.frameDurations[self.currentFrameIndex] doubleValue];</div><div class="line">        if (++self.currentFrameIndex &gt;= [self.animatedImage.images count]) &#123;</div><div class="line">            if (--self.loopCountdown == 0) &#123;</div><div class="line">                [self stopAnimating];</div><div class="line">                return;</div><div class="line">            &#125;</div><div class="line">            self.currentFrameIndex = 0;</div><div class="line">        &#125;</div><div class="line">        self.currentFrameIndex = MIN(self.currentFrameIndex, [self.animatedImage.images count] - 1);</div><div class="line">        self.currentFrame = [self.animatedImage getFrameWithIndex:self.currentFrameIndex];</div><div class="line">        [self.layer setNeedsDisplay];</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注意到，在setImage和changeKeyframe方法中，都需要显示调用setNeedsDisplay来更新放在layer.contents中的帧图片。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">- (void)displayLayer:(CALayer *)layer</div><div class="line">&#123;</div><div class="line">    if (!self.animatedImage || [self.animatedImage.images count] == 0) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">//    NSLog(@&quot;display index: %luu&quot;, (unsigned long)self.currentFrameIndex);</div><div class="line">    if(self.currentFrame &amp;&amp; ![self.currentFrame isKindOfClass:[NSNull class]])</div><div class="line">        layer.contents = (__bridge id)([self.currentFrame CGImage]);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="γ-如何使用上述子类？"><a href="#γ-如何使用上述子类？" class="headerlink" title="γ. 如何使用上述子类？"></a>γ. 如何使用上述子类？</h3><p>——That’s so easy~</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">AdrImageView* imageView = [[AdrImageView alloc] initWithFrame:CGRectMake(0, 160, 320, 240)];</div><div class="line">[self.view addSubview:imageView];</div><div class="line">imageView.image = [AdrGIFImage imageNamed:@&quot;joy.gif&quot;];</div></pre></td></tr></table></figure>
+<h2 id="No-3-如何验证我的方法是否有效？"><a href="#No-3-如何验证我的方法是否有效？" class="headerlink" title="No.3 如何验证我的方法是否有效？"></a>No.3 如何验证我的方法是否有效？</h2><p>最简便的方法便是，播放GIF图片的时候查看Xcode的Memory数值即可。<br>当然，若要获得精确数值，可以使用各种检测工具，如Xcode自带的<a href="http://www.cocoachina.com/ios/20150225/11163.html" target="_blank" rel="external">Instruments</a>进行有效的iOS内存检测。</p>
+<p>另外，提供<a href="http://7xodsa.com1.z0.glb.clouddn.com/joy.gif" target="_blank" rel="external">GIF测试图片</a>，若你正在使用的库能够无压力的播放该图（应用不崩溃，内存不暴涨），则说明你的库很强大，可以留言一起探讨新方法~</p>
+<p>当然啦，用本文所阐述的方法，能够无压力播放样图~ hooooohoho</p>
+<h2 id="No-4-写在最后"><a href="#No-4-写在最后" class="headerlink" title="No.4 写在最后"></a>No.4 写在最后</h2><p>非常感谢<a href="https://github.com/liyong03/YLGIFImage" target="_blank" rel="external">YLGIFImage</a>，在迷茫于如何降低GIF动图内存消耗的日子里，我找到了这个强有力的第三方库，给予我动力的源泉！</p>
+<p>以上，如果你有更好的方法~ 欢迎跟帖回复大家一起探讨学习~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/14/任意门离线缓存介绍/" rel="prev" title="任意门离线缓存介绍">
+                任意门离线缓存介绍 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://7xodsa.com1.z0.glb.clouddn.com/insightlabs.jpeg"
+               alt="insightLabs" />
+          <p class="site-author-name" itemprop="name">insightLabs</p>
+          <p class="site-description motion-element" itemprop="description">Lab for those insightful</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#No-1-为何GIF动图要做内存优化？"><span class="nav-number">1.</span> <span class="nav-text">No.1 为何GIF动图要做内存优化？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#No-2-如何为GIF动图做内存优化？"><span class="nav-number">2.</span> <span class="nav-text">No.2 如何为GIF动图做内存优化？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#β-设计UIImageView的子类—AdrImageView"><span class="nav-number">2.1.</span> <span class="nav-text">β. 设计UIImageView的子类—AdrImageView</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#γ-如何使用上述子类？"><span class="nav-number">2.2.</span> <span class="nav-text">γ. 如何使用上述子类？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#No-3-如何验证我的方法是否有效？"><span class="nav-number">3.</span> <span class="nav-text">No.3 如何验证我的方法是否有效？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#No-4-写在最后"><span class="nav-number">4.</span> <span class="nav-text">No.4 写在最后</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">insightLabs</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>

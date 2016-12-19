@@ -1,0 +1,604 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="任意门的离线缓存提供了以下功能：
+
+请求拦截、对比服务器文件与本地文件版本（MD5校验）；
+返回本地文件诶webview加载；
+可提前下载站点zip包并解压
+(鲜为人知的功能——看下去会有彩蛋~)
+…
+
+本节主要介绍任意门的离线缓存流程以及接入指引。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="任意门离线缓存介绍">
+<meta property="og:url" content="http://yoursite.com/2016/06/14/任意门离线缓存介绍/index.html">
+<meta property="og:site_name" content="insightLabs">
+<meta property="og:description" content="任意门的离线缓存提供了以下功能：
+
+请求拦截、对比服务器文件与本地文件版本（MD5校验）；
+返回本地文件诶webview加载；
+可提前下载站点zip包并解压
+(鲜为人知的功能——看下去会有彩蛋~)
+…
+
+本节主要介绍任意门的离线缓存流程以及接入指引。">
+<meta property="og:image" content="http://7xodsa.com1.z0.glb.clouddn.com/%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98%E6%B5%81%E7%A8%8B.png">
+<meta property="og:updated_time" content="2016-12-19T08:17:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="任意门离线缓存介绍">
+<meta name="twitter:description" content="任意门的离线缓存提供了以下功能：
+
+请求拦截、对比服务器文件与本地文件版本（MD5校验）；
+返回本地文件诶webview加载；
+可提前下载站点zip包并解压
+(鲜为人知的功能——看下去会有彩蛋~)
+…
+
+本节主要介绍任意门的离线缓存流程以及接入指引。">
+<meta name="twitter:image" content="http://7xodsa.com1.z0.glb.clouddn.com/%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98%E6%B5%81%E7%A8%8B.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 任意门离线缓存介绍 | insightLabs </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">insightLabs</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                任意门离线缓存介绍
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-14T20:07:21+08:00" content="2016-06-14">
+              2016-06-14
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>任意门的离线缓存提供了以下功能：</p>
+<ul>
+<li>请求拦截、对比服务器文件与本地文件版本（MD5校验）；</li>
+<li>返回本地文件诶webview加载；</li>
+<li>可提前下载站点zip包并解压</li>
+<li>(鲜为人知的功能——看下去会有彩蛋~)</li>
+<li>…</li>
+</ul>
+<p>本节主要介绍任意门的离线缓存流程以及接入指引。<br><a id="more"></a></p>
+<h2 id="一、离线缓存流程"><a href="#一、离线缓存流程" class="headerlink" title="一、离线缓存流程"></a>一、离线缓存流程</h2><p><img src="http://7xodsa.com1.z0.glb.clouddn.com/%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98%E6%B5%81%E7%A8%8B.png" alt="离线缓存流程"></p>
+<p>A：在任意门AdrWebViewController中的- (void)adrLoadWebCache方法中配置插件对应离线缓存，启用后离线缓存框架会先下载manifest.json和webVersion.json。就绪后，开始加载webview。webview发起一个对服务器的资源请求，将被离线缓存拦截（A被拦截，所以用虚线标识；B线表示被拦截的资源请求）。</p>
+<p>C：拦截后，离线缓存框架会查找本地资源；</p>
+<p>C1：若找到该资源且对比版本与服务器一致，则返回本地资源（离线缓存框架中的- (NSCachedURLResponse <em>)cachedResponseForRequest:(NSURLRequest </em>)request方法）</p>
+<p>C2：若找不到本地资源，或者找到了但是与服务器版本不一致，则webview进入在线加载，从服务器取回资源后，资源将由离线缓存框架存入本地（- (void)storeCachedResponse:(NSCachedURLResponse <em>)cachedResponse forRequest:(NSURLRequest </em>)request方法），以备下次加载可使用。</p>
+<h2 id="二、离线缓存机制"><a href="#二、离线缓存机制" class="headerlink" title="二、离线缓存机制"></a>二、离线缓存机制</h2><p>任意门的离线缓存功能是使用Apple的NSURLCache回调方法来实现。而这个类Apple采用的机制是，<strong>只能初始化一次</strong>，如果多次初始化这个东西，会导致以下问题：</p>
+<ul>
+<li><strong>iOS7或以前版本</strong>，NSURLCache遵循的是谁最后初始化，就给谁用。</li>
+</ul>
+<ul>
+<li><strong>iOS8或以上</strong>，则是NSURLCache这个谁最先初始化，就给谁用，而且，想完整使用，还得在整个app生命周期中发送第一个http请求前初始化才行。</li>
+</ul>
+<h2 id="三、离线缓存接入"><a href="#三、离线缓存接入" class="headerlink" title="三、离线缓存接入"></a>三、离线缓存接入</h2><p>在了解了离线缓存机制后，若宿主（即，接入任意门SDK的APP称为“宿主”）需要接入任意门的离线缓存，则必须先完成以下步骤：</p>
+<ul>
+<li><p>检查自己工程中是否有用到NSURLCache，若有则需要先去除相关实现，避免与任意门的缓存功能冲突；</p>
+</li>
+<li><p>iOS8或以上版本，在工程的appdelegate.m文件中，在所有网络请求发出之前，优先初始化任意门的离线缓存，若不清楚具体哪些方法能够发出网络请求，建议参照以下做法（在第一行处初始化）：</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</div><div class="line">&#123;</div><div class="line">    [PACacheManager share];//第一行处初始化离线缓存</div><div class="line">    ...</div><div class="line">&#125;</div><div class="line">``` </div><div class="line"></div><div class="line">基础保障操作完成后，任意门提供两套缓存方案供宿主选择：</div><div class="line"></div><div class="line">* 非定制化的自动缓存方案，离线缓存直接交由任意门全权处理；</div><div class="line">* 可定制化的离线缓存方案，拦截指定域名后交由宿主处理；</div><div class="line"></div><div class="line">### （1）非定制化的自动缓存方案</div><div class="line"></div><div class="line">在此方案中，宿主直接使用**startWebCacheWithRootDirectory：Domanin：webVersionFileName：manifestFileName：DownloadWebVersion：Finish：**方法来做离线缓存，这样离线缓存直接全权交由任意门处理，会自动监测服务器及本地文件的更新和替换，完成整套离线缓存功能。</div><div class="line"></div><div class="line">具体实现及详细代码如下：</div></pre></td></tr></table></figure>
+<ul>
+<li>(void)adrLoadWebCache<br>{<br>[[PACacheManager share] startWebCacheWithRootDirectory:self.pluginUid<pre><code>           Domanin:self.htmlBaseUrl
+webVersionFileName:nil
+  manifestFileName:nil
+DownloadWebVersion:YES
+            Finish:^(CacheResult result) {
+                [weakSelf adrLoadWebView];
+            }];
+</code></pre>}</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">为方便宿主理解使用，该方法每个参数的含义解释如下：</div><div class="line"></div><div class="line">* startWebCacheWithRootDirectory：指定存放站点缓存文件的document目录名称</div><div class="line">* Domanin：放置离线缓存manifest.json和webVersion.json的服务器目录</div><div class="line">* webVersionFileName：可以指定webVersion.json的名称，默认为webVersion.json</div><div class="line">* manifestFileName：可以指定manifest.json的名称，默认为manifest.json</div><div class="line">* DownloadWebVersion：是否检查程序包中的预先缓存的站点文件</div><div class="line"></div><div class="line"></div><div class="line">### （2）可定制化的离线缓存方案</div><div class="line"></div><div class="line">在此方案中，任意门的离线缓存为宿主提供拦截功能，拦截后续操作交由宿主自行处理。宿主可通过以下两步走流程完成定制化接入：</div><div class="line"></div><div class="line">#### a.添加拦截站点域名的代理</div></pre></td></tr></table></figure>
+<p>addTarget:(id)delegate Domain:(NSString *)targetDomain</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">* delegate：实现PACacheProtocal协议的对象</div><div class="line">* targetDomain：宿主APP需要离线缓存的站点域名。</div><div class="line"></div><div class="line">#### b.实现PACacheProtocal的两个回调方法</div></pre></td></tr></table></figure>
+<ul>
+<li>(NSCachedURLResponse <em>)interceptForRequest:(NSURLRequest </em>)request;</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">```</div><div class="line">- (void)storeCachedResponse:(NSCachedURLResponse *)cachedResponse forRequest:(NSURLRequest *)request;</div></pre></td></tr></table></figure>
+<p>任意门离线缓存拦截到targetDomain指定的域名，则转发给delegate做处理，PACacheProtocal中两个回调方法与<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSURLCache_Class/" target="_blank" rel="external">NSURLCache</a>中的cachedResponseForRequest和storeCachedResponse一一对应、功能等价。</p>
+<h2 id="四、离线缓存鲜为人知的功能"><a href="#四、离线缓存鲜为人知的功能" class="headerlink" title="四、离线缓存鲜为人知的功能"></a>四、离线缓存鲜为人知的功能</h2><p>离线缓存还支持，将站点文件直接打到ipa包里面，随包发布，然后app第一次运行时，将文件复制到沙盒，这样webview在打开前，离线文件就已经准备就绪。</p>
+<h2 id="五、写在最后"><a href="#五、写在最后" class="headerlink" title="五、写在最后"></a>五、写在最后</h2><p>NSURLCache虽然用很简单的两行代码就可以配置缓存，但是在实际应用中也会有许多<a href="http://www.codingnext.com/nsurlcache.html" target="_blank" rel="external">开发者踩过的坑</a>。当然，不了解NSURLCache的同学，可以在<a href="http://nshipster.cn/nsurlcache/" target="_blank" rel="external">这里</a>简单了解下。</p>
+<p>如在接入离线缓存的过程中遇到任何难解问题，或者你有更好的离线缓存方案，均可留言互相交流探讨｡◕‿◕｡</p>
+<p>以上，感谢@陈步青 提供宝贵的资料。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/24/iOS中的GIF图片内存优化/" rel="next" title="iOS中的GIF图片内存优化">
+                <i class="fa fa-chevron-left"></i> iOS中的GIF图片内存优化
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/21/设计模式续集之创建型模式混淆点/" rel="prev" title="设计模式续集之创建型模式混淆点">
+                设计模式续集之创建型模式混淆点 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://7xodsa.com1.z0.glb.clouddn.com/insightlabs.jpeg"
+               alt="insightLabs" />
+          <p class="site-author-name" itemprop="name">insightLabs</p>
+          <p class="site-description motion-element" itemprop="description">Lab for those insightful</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、离线缓存流程"><span class="nav-number">1.</span> <span class="nav-text">一、离线缓存流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、离线缓存机制"><span class="nav-number">2.</span> <span class="nav-text">二、离线缓存机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、离线缓存接入"><span class="nav-number">3.</span> <span class="nav-text">三、离线缓存接入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、离线缓存鲜为人知的功能"><span class="nav-number">4.</span> <span class="nav-text">四、离线缓存鲜为人知的功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、写在最后"><span class="nav-number">5.</span> <span class="nav-text">五、写在最后</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">insightLabs</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>

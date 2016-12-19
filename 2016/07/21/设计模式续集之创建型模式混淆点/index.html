@@ -1,0 +1,687 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="一、简介创建类模式主要关注对象的创建过程，将对象的创建过程进行封装，使客户端可以直接得到对象，而不用去关心如何创建对象。创建类模式有5种，分别是：
+
+
+单例模式：用于得到内存中的唯一对象；
+工厂方法模式：用于创建复杂对象；
+抽象工厂模式：用于创建一组相关或相互依赖的复杂对象；
+建造者模式：用于创建模块化的更加复杂的对象；
+原型模式：用于得到一个对象的拷贝。
+
+
+在以上五种模式中，中间三种模式在学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式续集之创建型模式混淆点">
+<meta property="og:url" content="http://yoursite.com/2016/07/21/设计模式续集之创建型模式混淆点/index.html">
+<meta property="og:site_name" content="insightLabs">
+<meta property="og:description" content="一、简介创建类模式主要关注对象的创建过程，将对象的创建过程进行封装，使客户端可以直接得到对象，而不用去关心如何创建对象。创建类模式有5种，分别是：
+
+
+单例模式：用于得到内存中的唯一对象；
+工厂方法模式：用于创建复杂对象；
+抽象工厂模式：用于创建一组相关或相互依赖的复杂对象；
+建造者模式：用于创建模块化的更加复杂的对象；
+原型模式：用于得到一个对象的拷贝。
+
+
+在以上五种模式中，中间三种模式在学习">
+<meta property="og:image" content="http://7xodsa.com1.z0.glb.clouddn.com/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E7%B1%BB%E5%9B%BE.png">
+<meta property="og:image" content="http://7xodsa.com1.z0.glb.clouddn.com/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E7%B1%BB%E5%9B%BE.png">
+<meta property="og:image" content="http://7xodsa.com1.z0.glb.clouddn.com/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%BE%8B%E5%AD%90%E5%9B%BE.JPG">
+<meta property="og:image" content="http://7xodsa.com1.z0.glb.clouddn.com/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%BE%8B%E5%AD%90%E7%BB%93%E6%9E%84%E5%9B%BE.JPG">
+<meta property="og:image" content="http://7xodsa.com1.z0.glb.clouddn.com/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E4%BE%8B%E5%AD%90%E5%9B%BE.JPG">
+<meta property="og:image" content="http://7xodsa.com1.z0.glb.clouddn.com/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E4%BE%8B%E5%AD%90%E7%BB%93%E6%9E%84%E5%9B%BE.JPG">
+<meta property="og:image" content="http://7xodsa.com1.z0.glb.clouddn.com/%E7%94%9F%E6%88%90%E5%99%A8%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.png">
+<meta property="og:image" content="http://7xodsa.com1.z0.glb.clouddn.com/%E7%94%9F%E6%88%90%E5%99%A8%E6%A8%A1%E5%BC%8F%E6%97%B6%E5%BA%8F%E5%9B%BE.png">
+<meta property="og:updated_time" content="2016-12-19T08:19:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式续集之创建型模式混淆点">
+<meta name="twitter:description" content="一、简介创建类模式主要关注对象的创建过程，将对象的创建过程进行封装，使客户端可以直接得到对象，而不用去关心如何创建对象。创建类模式有5种，分别是：
+
+
+单例模式：用于得到内存中的唯一对象；
+工厂方法模式：用于创建复杂对象；
+抽象工厂模式：用于创建一组相关或相互依赖的复杂对象；
+建造者模式：用于创建模块化的更加复杂的对象；
+原型模式：用于得到一个对象的拷贝。
+
+
+在以上五种模式中，中间三种模式在学习">
+<meta name="twitter:image" content="http://7xodsa.com1.z0.glb.clouddn.com/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E7%B1%BB%E5%9B%BE.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 设计模式续集之创建型模式混淆点 | insightLabs </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">insightLabs</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                设计模式续集之创建型模式混淆点
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-21T15:49:09+08:00" content="2016-07-21">
+              2016-07-21
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、简介"><a href="#一、简介" class="headerlink" title="一、简介"></a>一、简介</h2><p>创建类模式主要关注对象的创建过程，将对象的创建过程进行封装，使客户端可以直接得到对象，而不用去关心如何创建对象。创建类模式有5种，分别是：</p>
+<blockquote>
+<ul>
+<li>单例模式：用于得到内存中的唯一对象；</li>
+<li>工厂方法模式：用于创建复杂对象；</li>
+<li>抽象工厂模式：用于创建一组相关或相互依赖的复杂对象；</li>
+<li>建造者模式：用于创建模块化的更加复杂的对象；</li>
+<li><a href="http://42.96.135.152/t/topic/146" target="_blank" rel="external">原型模式</a>：用于得到一个对象的拷贝。</li>
+</ul>
+</blockquote>
+<p>在以上五种模式中，中间三种模式在学习过程中最易混淆（<strong>工厂方法、抽象工厂、建造者</strong>），本文通过梳理三者的具体特性形成对比，以期让初学者能够少走弯路。<br><a id="more"></a></p>
+<h2 id="二、工厂方法与抽象工厂"><a href="#二、工厂方法与抽象工厂" class="headerlink" title="二、工厂方法与抽象工厂"></a>二、工厂方法与抽象工厂</h2><p>我们先来看下工厂方法和抽象工厂的异同点，再举例解释。</p>
+<table>
+<thead>
+<tr>
+<th>工厂方法</th>
+<th>抽象工厂</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>通过类继承来创建抽象产品</td>
+<td>通过对象组合来创建抽象产品</td>
+</tr>
+<tr>
+<td>创建一种产品</td>
+<td>创建多系列产品</td>
+</tr>
+<tr>
+<td>增加子类即可增加新产品</td>
+<td>必须修改父类接口才能创建新产品</td>
+</tr>
+</tbody>
+</table>
+<!--<table>
+<tr>
+<td><center>工厂方法</td>
+<td><center>抽象工厂</td>
+</tr>
+<tr>
+<td>通过类继承来创建抽象产品</td>
+<td>通过对象组合来创建抽象产品</td>
+</tr>
+<tr>
+<td>创建一种产品</td>
+<td>创建多系列产品</td>
+</tr>
+<tr>
+<td>增加子类即可增加新产品</td>
+<td>必须修改父类接口才能创建新产品</td>
+</tr>
+</table>-->
+<p>两者的<strong>共同目的</strong>是：<strong>创建对象而不让客户端知晓返回了什么确切的具体对象</strong>。</p>
+<h3 id="1-类图比较"><a href="#1-类图比较" class="headerlink" title="1. 类图比较"></a>1. 类图比较</h3><p>工厂方法的类图：</p>
+<p><img src="http://7xodsa.com1.z0.glb.clouddn.com/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E7%B1%BB%E5%9B%BE.png" alt="工厂方法类图"></p>
+<p>抽象工厂的类图：</p>
+<p><img src="http://7xodsa.com1.z0.glb.clouddn.com/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E7%B1%BB%E5%9B%BE.png" alt="抽象工厂类图"></p>
+<p>通过以上两图的比较，能够看出：<br>&gt;</p>
+<ul>
+<li>工厂方法输出的是<strong>单一</strong>产品（ConcreteProduct），抽象工厂输出的是<strong>一系列</strong>产品（ProductA1/2、ProductB1/2）；</li>
+<li>工厂方法<strong>扩展简单</strong>，只需要增加新工厂（ConcreteCreator2）即可得到新产品（ConcreterProduct2），而抽象工厂则<strong>扩展困难</strong>，需要从上至下修改每个类中相应的方法才能增加新产品；</li>
+</ul>
+<h3 id="2-举个栗子"><a href="#2-举个栗子" class="headerlink" title="2. 举个栗子"></a>2. 举个栗子</h3><p>相信大部分新接触设计模式的同学，单看类图还是无法深刻体会到两者的差异，基于此，让我们举一个生活中的例子来具体解释下吧~</p>
+<p>吃饭是人的基本需求，so，我们就从吃饭的例子来引入：</p>
+<h4 id="1-工厂方法"><a href="#1-工厂方法" class="headerlink" title="(1)工厂方法"></a>(1)工厂方法</h4><p>厨师手艺再好，总有不会做的菜，那吃货们如果想要吃到不同的菜品呢？——可以多找几个厨师啊，各司其职！（前提是你有钱…）</p>
+<p><img src="http://7xodsa.com1.z0.glb.clouddn.com/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%BE%8B%E5%AD%90%E5%9B%BE.JPG" alt="工厂方法例子图"></p>
+<p>这样，我们新增一个菜只需要新增一个厨师，原来的厨师还在做原来的工作，这样我们的设计就<strong>对修改关闭</strong>了，菜和厨师分别类似于产品和工厂。</p>
+<p>上述例子图转换成结构图为：</p>
+<p><img src="http://7xodsa.com1.z0.glb.clouddn.com/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%BE%8B%E5%AD%90%E7%BB%93%E6%9E%84%E5%9B%BE.JPG" alt="工厂方法例子结构图"></p>
+<p>与前面的类图异曲同工~</p>
+<h4 id="2-抽象工厂"><a href="#2-抽象工厂" class="headerlink" title="(2)抽象工厂"></a>(2)抽象工厂</h4><p>随着时间的推移，走过的地方越来越多，我们发现菜原来还分了许多菜系，鲁菜、粤菜、湘菜等等，它们各有各的风味。如果<font color="red">我们想要随时吃到不同菜系的菜品呢？</font>——还是多找几个厨师啊~</p>
+<p><img src="http://7xodsa.com1.z0.glb.clouddn.com/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E4%BE%8B%E5%AD%90%E5%9B%BE.JPG" alt="抽象工厂例子图"></p>
+<p>可以看到，同样是多找几个厨师，但是跟之前的有些许差别。此处的厨师是<strong>特定菜系</strong>的厨师，他们做出的不单单是单一的菜品，更是特定菜系下的<strong>一系列菜品</strong>，厨师的类也从<strong>返回食物基类</strong>这一层级提升为<strong>加工特定的几种菜品</strong>的层级，并<strong>把相关方法抽象化</strong>，<strong>交由具体菜系的厨师去加工</strong>。</p>
+<p>好了，现在我们能够吃到各种菜系的菜品了，但是<font color="red">如果又遇到之前没见过的菜品，而原来厨师这个抽象类中也没有包含这种菜品的话，那想要吃到的话，就得<strong>修改厨师这个抽象类</strong>了，同时<strong>从上往下都得修改</strong>以符合要求，这也就<strong>违反了对修改关闭原则</strong></font>。</p>
+<p>因此在抽象工厂中，<strong>对基类的设计尤为重要</strong>。</p>
+<p>上述例子转换成结构图为：</p>
+<p><img src="http://7xodsa.com1.z0.glb.clouddn.com/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E4%BE%8B%E5%AD%90%E7%BB%93%E6%9E%84%E5%9B%BE.JPG" alt="抽象工厂例子结构图"></p>
+<h3 id="3-两者在Cocoa-Touch框架中的应用"><a href="#3-两者在Cocoa-Touch框架中的应用" class="headerlink" title="3.两者在Cocoa Touch框架中的应用"></a>3.两者在Cocoa Touch框架中的应用</h3><p>在我们平常用的类中也有很多是基于抽象工厂模式的，例如NSNumber，NSData，NSArray，NSString和NSDictionary，这些其实都是<strong>“类簇”</strong>的概念。<br>&gt;<br>例如<strong>NSNumer</strong>有NSCFNumber和NSCFBoolean两种具体子类(具体工厂)；<strong>NSString</strong>也有NSCFString等。这些都是<strong>基于抽像工厂</strong>的基本概念而延伸出来的，而暴露给客户端的仅仅是顶层的抽像类，封装了其余的所有细节。<br>&gt;<br>而其中在NSNumber中，<strong>接受不同类型的参数并返回NSNumber实例的类方法</strong>是类工厂方法，也就是<strong>工厂方法模式</strong>延伸出来的。如，numberWithBool:和numberWithChar:中，它们是类方法，向NSNumber发送[[NSNumber numberWithBool:bool]]与[[NSNumber numberWithChar:char]]，以获得与传入参数同类型的各种NSNumber实例，所有细节都有NSNumber的类工厂方法负责。</p>
+<h3 id="4-总结"><a href="#4-总结" class="headerlink" title="4.总结"></a>4.总结</h3><p>抽象工厂返回的接口不再是产品A和产品B的共同基类Product了，而是产品A、产品B基类（在工厂模式中它们为具体实现 类，这里变成了基类）了。此时工厂的抽象和简单工厂中的工厂方法也很类似，就是这些特征区使其别于工厂模式而变成抽象工厂模式了。</p>
+<p>因此抽象工厂解决的是创建一系列有共同风格的产品（鲁菜还是粤菜），而工厂方法模式解决的创建有共同特征的一系列产品（红烧肉、清蒸鱼它们都是食物）。抽象工厂并不比工厂模式完美，只不过是各自的适用领域不同而已。</p>
+<p>其实，这里如果把 抽象工厂模式的接口返回产品A和产品B的共同基类（工厂模式返回的参数），你会发现，奇怪这个模式怎么这么眼熟，它不是恰恰退化成工厂模式了。</p>
+<h2 id="三、抽象工厂与建造者"><a href="#三、抽象工厂与建造者" class="headerlink" title="三、抽象工厂与建造者"></a>三、抽象工厂与建造者</h2><p>在理清工厂两个模式之间的区别之后，再来理解与建造者的区别就不是很困难了。</p>
+<p>同样的，我们先来看看抽象工厂和建造者的对比：</p>
+<table>
+<thead>
+<tr>
+<th>生成器</th>
+<th>抽象工厂</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>构建复杂对象</td>
+<td>构建简单或复杂对象</td>
+</tr>
+<tr>
+<td>多个步骤构建对象</td>
+<td>单一步骤构建对象</td>
+</tr>
+<tr>
+<td>多种方式构建对象</td>
+<td>单一方式构建对象</td>
+</tr>
+<tr>
+<td>在构建过程的最后一步返回产品</td>
+<td>立刻返回产品</td>
+</tr>
+<tr>
+<td>专注一个特定的产品</td>
+<td>强调一套产品</td>
+</tr>
+</tbody>
+</table>
+<p>两者的<strong>共同目的</strong>为：构建同时属于几个产品族的对象。</p>
+<h3 id="建造者模式类图"><a href="#建造者模式类图" class="headerlink" title="建造者模式类图"></a>建造者模式类图</h3><p><img src="http://7xodsa.com1.z0.glb.clouddn.com/%E7%94%9F%E6%88%90%E5%99%A8%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.png" alt="建造者模式类图"></p>
+<h3 id="建造者模式时序图"><a href="#建造者模式时序图" class="headerlink" title="建造者模式时序图"></a>建造者模式时序图</h3><p><img src="http://7xodsa.com1.z0.glb.clouddn.com/%E7%94%9F%E6%88%90%E5%99%A8%E6%A8%A1%E5%BC%8F%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt="建造者模式时序图"></p>
+<h3 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h3><p>&gt;</p>
+<ul>
+<li>与抽象工厂模式相比，建造者模式返回一个组装好的完整产品，而抽象工厂模式返回一系列相关的产品，这些产品位于不同的产品等级结构，构成了一个产品族。</li>
+<li>在抽象工厂模式中，客户端实例化工厂类，然后调用工厂方法获取所需产品对象，而在建造者模式中，客户端可以不直接调用建造者的相关方法，而是通过指挥者类来指导如何生成对象，包括对象的组装过程和建造步骤，它侧重于一步步构造一个复杂对象，返回一个完整的对象。</li>
+<li>如果将抽象工厂模式看成汽车配件生产工厂，生产一个产品族的产品，那么建造者模式就是一个汽车组装工厂，通过对部件的组装可以返回一辆完整的汽车。</li>
+</ul>
+<p>可以看到，建造者模式与抽象工厂模式是极为相似的，总体上，建造者模式仅仅只比抽象工厂模式多了一个<strong>“导演类”</strong>的角色。在建造者模式的类图中，假如把这个导演类看做是最终调用的客户端，那么图中剩余的部分就可以看作是一个简单的工厂模式了。</p>
+<h2 id="四、写在最后"><a href="#四、写在最后" class="headerlink" title="四、写在最后"></a>四、写在最后</h2><p>本篇文章作为我学完设计模式课程后的总结，做到及时记录以巩固加深对模式的理解，同时以网上部分文章作为参考，尽量保证本文的准确性。如文章中有错误纰漏，烦请留言指出~ </p>
+<h2 id="五、参考文章"><a href="#五、参考文章" class="headerlink" title="五、参考文章"></a>五、参考文章</h2><p>&gt;<br>博客：<a href="http://blog.csdn.net/humanbeng/article/details/7176751" target="_blank" rel="external">http://blog.csdn.net/humanbeng/article/details/7176751</a><br>&gt;<br>博客：<a href="http://www.programgo.com/article/59072378140/" target="_blank" rel="external">http://www.programgo.com/article/59072378140/</a><br>&gt;<br>简书：<a href="http://www.jianshu.com/p/feea89f9fef2" target="_blank" rel="external">http://www.jianshu.com/p/feea89f9fef2</a><br>&gt;<br>书籍：<a href="http://pan.baidu.com/share/link?shareid=3495060272&amp;uk=2248986250&amp;app=zd" target="_blank" rel="external">《Objective-C编程之道》</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/14/任意门离线缓存介绍/" rel="next" title="任意门离线缓存介绍">
+                <i class="fa fa-chevron-left"></i> 任意门离线缓存介绍
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://7xodsa.com1.z0.glb.clouddn.com/insightlabs.jpeg"
+               alt="insightLabs" />
+          <p class="site-author-name" itemprop="name">insightLabs</p>
+          <p class="site-description motion-element" itemprop="description">Lab for those insightful</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、简介"><span class="nav-number">1.</span> <span class="nav-text">一、简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、工厂方法与抽象工厂"><span class="nav-number">2.</span> <span class="nav-text">二、工厂方法与抽象工厂</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-类图比较"><span class="nav-number">2.1.</span> <span class="nav-text">1. 类图比较</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-举个栗子"><span class="nav-number">2.2.</span> <span class="nav-text">2. 举个栗子</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-工厂方法"><span class="nav-number">2.2.1.</span> <span class="nav-text">(1)工厂方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-抽象工厂"><span class="nav-number">2.2.2.</span> <span class="nav-text">(2)抽象工厂</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-两者在Cocoa-Touch框架中的应用"><span class="nav-number">2.3.</span> <span class="nav-text">3.两者在Cocoa Touch框架中的应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-总结"><span class="nav-number">2.4.</span> <span class="nav-text">4.总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、抽象工厂与建造者"><span class="nav-number">3.</span> <span class="nav-text">三、抽象工厂与建造者</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#建造者模式类图"><span class="nav-number">3.1.</span> <span class="nav-text">建造者模式类图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建造者模式时序图"><span class="nav-number">3.2.</span> <span class="nav-text">建造者模式时序图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对比"><span class="nav-number">3.3.</span> <span class="nav-text">对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、写在最后"><span class="nav-number">4.</span> <span class="nav-text">四、写在最后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、参考文章"><span class="nav-number">5.</span> <span class="nav-text">五、参考文章</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">insightLabs</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
